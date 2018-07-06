@@ -1,0 +1,29 @@
+version: '3'
+services:
+  rabbitmq:
+    image: "rabbitmq:latest"
+    ports:
+      - 5672
+
+  image_publish:
+    restart: on-failure:5
+    image: "publish:latest"
+    ports:
+      - "8080:8080"
+    links:
+      - rabbitmq
+    environment:
+      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
+      - APP_HOST=:8080
+
+  text_publish:
+    restart: on-failure:5
+    image: "publish:latest"
+    ports:
+      - "8084:8084"
+    links:
+      - rabbitmq
+    environment:
+      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
+      - RABBITMQ_CONTENTTYPE=text/plain
+      - APP_HOST=:8084
