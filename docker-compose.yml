@@ -6,7 +6,7 @@ services:
       - 5672
 
   image_publish:
-    restart: on-failure:5
+    restart: on-failure:10
     image: "publish:latest"
     ports:
       - "8080:8080"
@@ -16,14 +16,38 @@ services:
       - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
       - APP_HOST=:8080
 
-  text_publish:
-    restart: on-failure:5
-    image: "publish:latest"
-    ports:
-      - "8084:8084"
+#  text_publish:
+#    restart: on-failure:10
+#    image: "publish:latest"
+#    ports:
+#      - "8084:8084"
+#    links:
+#      - rabbitmq
+#    environment:
+#      - RABBITMQ_EXHANGE=text
+#      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
+#      - RABBITMQ_CONTENTTYPE=text/plain
+#      - APP_HOST=:8084
+
+  google_image:
+    restart: on-failure:10
+    image: "google_image:latest"
     links:
       - rabbitmq
+    depends_on:
+      - image_publish
     environment:
       - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
-      - RABBITMQ_CONTENTTYPE=text/plain
-      - APP_HOST=:8084
+      - GOOGLE_APPLICATION_CREDENTIALS=./dippa-0a2450446ce1.json
+
+#  ibm_text:
+#    restart: on-failure:10
+#    image: "ibm_text:latest"
+#    links:
+#      - rabbitmq
+#    depends_on:
+#      - text_publish
+#    environment:
+#      - IBM_USERNAME=8f3704f2-08b2-495f-be69-517dae0dde24
+#      - IBM_PASSWORD=IKtshVYeDacD
+#      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
