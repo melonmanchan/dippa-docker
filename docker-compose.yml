@@ -16,18 +16,35 @@ services:
       - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
       - APP_HOST=:8080
 
-#  text_publish:
-#    restart: on-failure:10
-#    image: "publish:latest"
-#    ports:
-#      - "8084:8084"
-#    links:
-#      - rabbitmq
-#    environment:
-#      - RABBITMQ_EXHANGE=text
-#      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
-#      - RABBITMQ_CONTENTTYPE=text/plain
-#      - APP_HOST=:8084
+  text_publish:
+    restart: on-failure:10
+    image: "publish:latest"
+    ports:
+      - "8084:8084"
+    links:
+      - rabbitmq
+    environment:
+      - RABBITMQ_EXHANGE=text
+      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
+      - RABBITMQ_CONTENTTYPE=text/plain
+      - APP_HOST=:8084
+
+  writer:
+    restart: always
+    image: "writer:latest"
+    links:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://user:pw@db:5432/db?sslmode=disable
+
+  db:
+    image: postgres:10
+    restart: always
+
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pw
+      - POSTGRES_DB=db
 
   google_image:
     restart: on-failure:10
@@ -40,14 +57,14 @@ services:
       - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
       - GOOGLE_APPLICATION_CREDENTIALS=./dippa-0a2450446ce1.json
 
-#  ibm_text:
-#    restart: on-failure:10
-#    image: "ibm_text:latest"
-#    links:
-#      - rabbitmq
-#    depends_on:
-#      - text_publish
-#    environment:
-#      - IBM_USERNAME=8f3704f2-08b2-495f-be69-517dae0dde24
-#      - IBM_PASSWORD=IKtshVYeDacD
-#      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
+  ibm_text:
+    restart: on-failure:10
+    image: "ibm_text:latest"
+    links:
+      - rabbitmq
+    depends_on:
+      - text_publish
+    environment:
+      - IBM_USERNAME=${IBM_USERNAME}
+      - IBM_PASSWORD=${IBM_PASSWORD}
+      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
