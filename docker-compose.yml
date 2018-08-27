@@ -29,6 +29,7 @@ services:
       - RABBITMQ_CONTENTTYPE=text/plain
       - APP_HOST=:8084
 
+
   writer:
     restart: always
     image: "writer:latest"
@@ -36,6 +37,7 @@ services:
       - db
     environment:
       - DATABASE_URL=postgresql://user:pw@db:5432/db?sslmode=disable
+      - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
 
   db:
     image: postgres:10
