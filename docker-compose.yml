@@ -39,10 +39,26 @@ services:
       - DATABASE_URL=postgresql://user:pw@db:5432/db?sslmode=disable
       - RABBITMQ_ADDRESS=amqp://rabbitmq:5672
 
+  dippa_vis:
+    restart: always
+    image: "vis:latest"
+    ports:
+      - "3300:3300"
+    links:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://user:pw@db:5432/db?sslmode=disable
+      - PORT=3300
+
+  dippa_front:
+    restart: always
+    image: "front:latest"
+    ports:
+      - "3400:2015"
+
   db:
     image: postgres:10
     restart: always
-
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pw
